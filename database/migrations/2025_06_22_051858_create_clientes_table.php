@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('clientes', function (Blueprint $table) {
             $table->id();
+            $table->string('nombre');
+            $table->string('apellido');
+            $table->integer('edad');
+            $table->string('telefono')->nullable();
+            $table->string('direccion')->nullable();
+            $table->string('email')->unique();
+            $table->string('password');
+            $table->boolean('activo')->default(true);
             $table->timestamps();
         });
     }
@@ -22,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('clientes');
+        Schema::dropIfExists('cliente');
     }
 };

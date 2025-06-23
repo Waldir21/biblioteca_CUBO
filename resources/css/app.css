@@ -1,3 +1,4 @@
+/* Reset y fuente */
 * {
     margin: 0;
     padding: 0;
@@ -6,16 +7,21 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #2e2caa, #4c1c94);
-    color: #ffffff;
+    background: #e9fdf1; /* Verde claro suave */
+    color: #333;
 }
 
+/* === HEADER & NAVBAR === */
 header {
-    background-color: #fbfbff; /* Cambialo por el que quieras */
+    background-color: #2e2e2e; /* Gris oscuro */
     padding: 20px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.logo img {
+    height: 40px;
 }
 
 nav {
@@ -25,12 +31,6 @@ nav {
     width: 100%;
 }
 
-.logo {
-    color: #00f5ff;
-    font-weight: bold;
-    font-size: 1.2rem;
-}
-
 nav ul {
     list-style: none;
     display: flex;
@@ -38,21 +38,39 @@ nav ul {
 }
 
 nav ul li a {
-    color: #595959;
+    position: relative;
+    color: white;
     text-decoration: none;
     font-weight: 500;
-    transition: color 0.3s;
+    padding-bottom: 5px;
+    transition: color 0.3s ease;
+}
+
+nav ul li a::after {
+    content: "";
+    position: absolute;
+    width: 0%;
+    height: 2px;
+    left: 0;
+    bottom: 0;
+    background-color: #30c213; /* Verde claro */
+    transition: width 0.3s ease;
 }
 
 nav ul li a:hover {
-    color: #000000;
+    color: #5ac77b; /* Verde claro */
 }
 
+nav ul li a:hover::after {
+    width: 100%;
+}
+
+/* === HERO SECTION === */
 .hero {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 50px 80px;
+    padding: 60px 80px;
     flex-wrap: wrap;
 }
 
@@ -62,32 +80,36 @@ nav ul li a:hover {
 
 .hero-text h1 {
     font-size: 3.5rem;
-    color: #00f5ff;
+    color: #2e2e2e;
     margin-bottom: 20px;
 }
 
 .hero-text p {
     margin-bottom: 30px;
     line-height: 1.6;
-    color: #d0eaff;
+    color: #555;
 }
 
 .btn {
     display: inline-block;
     padding: 12px 28px;
-    border: 2px solid #00e1ff;
-    color: #00e1ff;
+    border: 2px solid #5ac77b;
+    color: #fff;
+    background-color: #5ac77b;
     border-radius: 30px;
     text-decoration: none;
     transition: all 0.3s ease;
 }
 
 .btn:hover {
-    background-color: #f9feff;
-    color: #1c003f;
+    background-color: transparent;
+    color: #5ac77b;
 }
 
+/* Imagen hero */
 .hero-image img {
-    max-width: 500px;
-    width: 100%;
+    max-width: 100%;
+    max-height: 600px; /* Aumentá este valor */
+    width: auto;
+    height: auto;
 }
