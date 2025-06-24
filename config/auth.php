@@ -17,6 +17,11 @@ return [
             'driver' => 'session',
             'provider' => 'clientes',
         ],
+
+        'usuario' => [  // <-- agregado
+            'driver' => 'session',
+            'provider' => 'usuarios',
+        ],
     ],
 
     'providers' => [
@@ -28,6 +33,11 @@ return [
         'clientes' => [
             'driver' => 'eloquent',
             'model' => App\Models\Cliente::class,
+        ],
+
+        'usuarios' => [  // <-- agregado
+            'driver' => 'eloquent',
+            'model' => App\Models\Usuario::class,
         ],
     ],
 
@@ -41,7 +51,14 @@ return [
 
         'clientes' => [
             'provider' => 'clientes',
-            'table' => 'password_reset_tokens', // Podés usar la misma tabla o una distinta
+            'table' => 'password_reset_tokens',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+
+        'usuarios' => [  // <-- opcional para resets de usuarios
+            'provider' => 'usuarios',
+            'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,
         ],

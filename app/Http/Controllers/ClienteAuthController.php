@@ -10,13 +10,13 @@ use Illuminate\Support\Facades\Storage;
 
 class ClienteAuthController extends Controller
 {
-    // Mostrar formulario de registro
+    // Mostrar formulario de registro (solo clientes)
     public function showRegister()
     {
         return view('auth.register');
     }
 
-    // Procesar el registro
+    // Procesar registro cliente
     public function register(Request $request)
     {
         $request->validate([
@@ -44,19 +44,24 @@ class ClienteAuthController extends Controller
         return redirect()->route('home')->with('success', '¡Registro exitoso!');
     }
 
-    // Mostrar formulario de login
+    // Mostrar formulario de login (unificado)
     public function showLogin()
     {
         return view('auth.login');
     }
 
-    // Procesar login
+    // Procesar login (intenta usuario primero, luego cliente)
     public function login(Request $request)
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
+
+        if (Auth::guard('usuario')->attempt($credentials, $request->remember)) {
+            $request->session()->regenerate();
+            return redirect()->route('admin.dashboard');
+        }
 
         if (Auth::guard('cliente')->attempt($credentials, $request->remember)) {
             $request->session()->regenerate();
@@ -65,17 +70,17 @@ class ClienteAuthController extends Controller
 
         return back()->withErrors([
             'email' => 'Estas credenciales no coinciden con nuestros registros.',
-        ]);
+        ])->onlyInput('email');
     }
 
-    // Mostrar la vista del perfil del cliente
+    // Mostrar perfil cliente
     public function perfil()
     {
-        $cliente = Auth::guard('cliente')->user(); // Obtener cliente autenticado
+        $cliente = Auth::guard('cliente')->user();
         return view('cliente.perfil', compact('cliente'));
     }
 
-    // Actualizar datos del perfil
+    // Actualizar perfil cliente
     public function actualizarPerfil(Request $request)
     {
         $cliente = Auth::guard('cliente')->user();
@@ -84,13 +89,12 @@ class ClienteAuthController extends Controller
             'nombre' => 'required|string|max:100',
             'email' => 'required|email|unique:clientes,email,' . $cliente->id,
             'password' => 'nullable|string|min:6|confirmed',
-            'foto' => 'nullable|image|max:2048', // max 2MB
+            'foto' => 'nullable|image|max:2048',
         ]);
 
         $cliente->nombre = $request->nombre;
         $cliente->email = $request->email;
 
-        // Manejar subida de foto y eliminar la anterior si existe
         if ($request->hasFile('foto')) {
             if ($cliente->foto) {
                 Storage::delete($cliente->foto);
@@ -99,7 +103,6 @@ class ClienteAuthController extends Controller
             $cliente->foto = $path;
         }
 
-        // Actualizar contraseña si se ingresó
         if ($request->password) {
             $cliente->password = Hash::make($request->password);
         }
@@ -109,10 +112,14 @@ class ClienteAuthController extends Controller
         return redirect()->route('cliente.perfil')->with('success', 'Perfil actualizado correctamente.');
     }
 
-    // Cerrar sesión
+    // Cerrar sesión para cliente o usuario
     public function logout(Request $request)
     {
-        Auth::guard('cliente')->logout();
+        if (Auth::guard('usuario')->check()) {
+            Auth::guard('usuario')->logout();
+        } elseif (Auth::guard('cliente')->check()) {
+            Auth::guard('cliente')->logout();
+        }
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

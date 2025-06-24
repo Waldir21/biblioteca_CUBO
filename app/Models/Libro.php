@@ -19,4 +19,10 @@ class Libro extends Model
         'tipo_libro',
         'id_usuario',
     ];
+
+    public function pdf()
+{
+    return $this->hasOne(LibroPdf::class, 'id_libro', 'id_libro');
+}
+
 }

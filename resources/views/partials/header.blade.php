@@ -9,27 +9,44 @@
 
         <!-- Navegación -->
         <ul class="flex gap-6 items-center">
-            @auth('cliente')
+            @auth('usuario')
+                <li><a href="{{ route('admin.dashboard') }}" class="hover:text-green-400">Inicio</a></li>
+                <li><a href="#" class="hover:text-green-400">Administrar Clientes</a></li>
+                <li><a href="#" class="hover:text-green-400">Administrar Libros</a></li>
+                <li>
+                    <a href="#" class="hover:text-green-400 flex items-center gap-1">
+                        <i class="fas fa-user"></i>
+                        Mi Perfil
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="hover:text-red-400" 
+                       onclick="event.preventDefault(); document.getElementById('logout-admin-form').submit();">
+                        Cerrar Sesión
+                    </a>
+                    <form id="logout-admin-form" action="{{ route('logout-admin') }}" method="POST" style="display: none;">
+                        @csrf
+                    </form>
+                </li>
+            @elseif(auth('cliente')->check())
                 <li><a href="{{ route('home') }}" class="hover:text-green-400">Inicio</a></li>
                 <li><a href="{{ route('cliente.libros') }}" class="hover:text-green-400">Libros</a></li>
                 <li><a href="#" class="hover:text-green-400">Nuevas Publicaciones</a></li>
                 <li>
-            <a href="{{ route('cliente.perfil') }}" class="hover:text-green-400 flex items-center gap-1">
-             <i class="fas fa-user"></i>
-             Perfil
-            </a>
-            </li>
-
+                    <a href="{{ route('cliente.perfil') }}" class="hover:text-green-400 flex items-center gap-1">
+                        <i class="fas fa-user"></i>
+                        Perfil
+                    </a>
+                </li>
                 <li>
-                <a href="#" class="hover:text-red-400" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    Cerrar Sesión
-                </a>
-
-    <form id="logout-form" action="{{ route('cliente.logout') }}" method="POST" style="display: none;">
-        @csrf
-    </form>
-</li>
-
+                    <a href="#" class="hover:text-red-400" 
+                       onclick="event.preventDefault(); document.getElementById('logout-cliente-form').submit();">
+                        Cerrar Sesión
+                    </a>
+                    <form id="logout-cliente-form" action="{{ route('cliente.logout') }}" method="POST" style="display: none;">
+                        @csrf
+                    </form>
+                </li>
             @else
                 <li><a href="{{ route('cliente.showLogin') }}" class="hover:text-green-400">Iniciar Sesión</a></li>
                 <li><a href="{{ route('cliente.showRegister') }}" class="text-green-500 font-semibold hover:text-green-400">Registro</a></li>
