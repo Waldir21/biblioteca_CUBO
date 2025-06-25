@@ -1,10 +1,16 @@
 # Usa una imagen base de PHP con Apache
 FROM php:8.3.20-apache
 
-# Instala dependencias necesarias
-RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev
+# Instala dependencias necesarias, incluyendo PostgreSQL
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libpq-dev  # Agregar esta línea para PostgreSQL
+
+# Instala las extensiones de PHP necesarias
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
-RUN docker-php-ext-install gd pdo pdo_mysql pdo_pgsql
+RUN docker-php-ext-install gd pdo pdo_mysql pdo_pgsql  # Esto incluye pdo_pgsql para PostgreSQL
 
 # Copia los archivos de tu proyecto Laravel al contenedor
 COPY . /var/www/html/
