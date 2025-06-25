@@ -23,7 +23,7 @@ Aquí promovemos la lectura, el aprendizaje y el acceso equitativo a la informac
     <div class="servicios-container">
       <div class="servicio-card">
         <i class="fa fa-book-open"></i>
-        <h3>Lectura Virtual</h3>
+        <h3>Lecturas Virtuales</h3>
         <p>Accede a una amplia variedad de libros y recursos digitales desde cualquier dispositivo, para disfrutar de la lectura en cualquier lugar y en cualquier momento.</p>
       </div>
       <div class="servicio-card">
