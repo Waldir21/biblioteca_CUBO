@@ -1,36 +1,37 @@
-# Usa una imagen base de PHP sin Apache
-FROM php:8.3.20-cli
+# Imagen base de PHP con Apache
+FROM php:8.3.20-apache
 
-# Instala dependencias necesarias, incluyendo PostgreSQL y herramientas comunes
+# Instala dependencias necesarias
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
     libpq-dev \
     git \
-    unzip \
-    && rm -rf /var/lib/apt/lists/*  # Limpiar lista de paquetes
+    unzip
 
-# Instala las extensiones de PHP necesarias para Laravel
+# Extensiones PHP necesarias
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-install gd pdo pdo_mysql pdo_pgsql
 
-# Copia los archivos de tu proyecto Laravel al contenedor
+# Copiar proyecto al contenedor
 COPY . /var/www/html/
 
-# Establece el directorio de trabajo
+# ⚠️ CAMBIAR DocumentRoot de Apache a /public
+RUN sed -i 's|/var/www/html|/var/www/html/public|' /etc/apache2/sites-available/000-default.conf
+
+# ⚠️ Activar mod_rewrite para Laravel
+RUN a2enmod rewrite
+
+# ⚠️ Dar permisos a Laravel
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Establecer el directorio de trabajo
 WORKDIR /var/www/html
 
-# Asegúrate de que los permisos sean correctos
-RUN chown -R www-data:www-data /var/www/html
-
-# Instala dependencias de Composer
+# Instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php
-RUN php composer.phar clear-cache
 RUN php composer.phar install --no-interaction --prefer-dist
 
-# Ejecuta el servidor PHP en el puerto 80
-CMD php artisan serve --host=0.0.0.0 --port=80
-
-# Exponiendo el puerto 80
+# Exponer el puerto
 EXPOSE 80
