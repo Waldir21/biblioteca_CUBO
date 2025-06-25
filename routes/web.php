@@ -32,3 +32,10 @@ Route::middleware(['auth:usuario'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::post('/logout-admin', [ClienteAuthController::class, 'logout'])->name('logout-admin');
 });
+
+// Rutas admin protegidas
+Route::middleware(['auth:usuario'])->group(function () {
+    Route::get('/admin/clientes', [AdminController::class, 'clientes'])->name('clientes.index');  // Agregar esta ruta
+    Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::post('/logout-admin', [ClienteAuthController::class, 'logout'])->name('logout-admin');
+});

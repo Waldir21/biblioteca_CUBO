@@ -11,8 +11,7 @@
         <ul class="flex gap-6 items-center">
             @auth('usuario')
                 <li><a href="{{ route('admin.dashboard') }}" class="hover:text-green-400">Inicio</a></li>
-                <li><a href="#" class="hover:text-green-400">Administrar Clientes</a></li>
-                <li><a href="#" class="hover:text-green-400">Administrar Libros</a></li>
+                
                 <li>
                     <a href="#" class="hover:text-green-400 flex items-center gap-1">
                         <i class="fas fa-user"></i>
