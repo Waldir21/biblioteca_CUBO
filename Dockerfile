@@ -32,6 +32,8 @@ WORKDIR /var/www/html
 # Instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php
 RUN php composer.phar install --no-interaction --prefer-dist
+RUN php artisan migrate --force
+
 
 # Exponer el puerto
 EXPOSE 80
