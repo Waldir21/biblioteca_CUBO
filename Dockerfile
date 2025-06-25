@@ -20,7 +20,7 @@ WORKDIR /var/www/html
 
 # Instala dependencias de Composer
 RUN curl -sS https://getcomposer.org/installer | php
-RUN php composer.phar install
+RUN php composer.phar install -vvv
 
 # Exponiendo el puerto 80
 EXPOSE 80
