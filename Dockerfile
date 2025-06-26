@@ -10,7 +10,18 @@ RUN apt-get update && apt-get install -y \
     git \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd pdo pdo_pgsql \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*  # Limpiar la caché de APT para reducir el tamaño
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*  # Limpiar la caché de APT para reducir el tamaño
+
+# Si falla, verificar las dependencias
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    zip \
+    git \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd pdo pdo_pgsql
 
 # Establecer el directorio de trabajo
 WORKDIR /var/www
