@@ -1,33 +1,35 @@
-FROM php:8.1-fpm
+# Usa una imagen base de PHP con Apache
+FROM php:8.3.20-apache
 
-# Instalar dependencias del sistema
+# Instala dependencias necesarias, incluyendo PostgreSQL
 RUN apt-get update && apt-get install -y \
     libpng-dev \
-    libjpeg62-turbo-dev \
+    libjpeg-dev \
     libfreetype6-dev \
-    zip \
-    git \
     libpq-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql pdo_pgsql mbstring exif \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    git \
+    unzip \
+    nano  # nano para editar el archivo de configuración de Apache
 
-WORKDIR /var/www
+# Instala las extensiones de PHP necesarias para Laravel (gd, pdo, pdo_mysql, pdo_pgsql)
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
+RUN docker-php-ext-install gd pdo pdo_mysql pdo_pgsql
 
-# Copiar solo composer.json primero para cachear la instalación de dependencias
-COPY composer.json composer.lock* ./
+# Copia los archivos de tu proyecto Laravel al contenedor
+COPY . /var/www/html/
 
-# Instalar Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Establece el directorio de trabajo
+WORKDIR /var/www/html
 
-# Instalar dependencias (con más detalles en caso de error)
-RUN composer install --no-interaction --prefer-dist --no-scripts --no-plugins -vvv || cat composer.lock
+# Configuración de Apache para usar la carpeta 'public' como DocumentRoot
+RUN sed -i 's|/var/www/html|/var/www/html/public|' /etc/apache2/sites-available/000-default.conf
 
-# Copiar el resto del proyecto
-COPY . .
+# Habilita el módulo rewrite de Apache
+RUN a2enmod rewrite
 
-# Establecer permisos
-RUN chown -R www-data:www-data /var/www
+# Instala dependencias de Composer
+RUN curl -sS https://getcomposer.org/installer | php
+RUN php composer.phar install --no-interaction --prefer-dist
 
-EXPOSE 9000
+# Exponiendo el puerto 80
+EXPOSE 80
