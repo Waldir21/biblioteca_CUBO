@@ -8,11 +8,11 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     zip \
     git \
-    libpq-dev  # Añadido para la instalación de pdo_pgsql
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_pgsql \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*  # Limpiar la caché de APT para reducir el tamaño
+    libpq-dev && \
+    docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-install gd pdo pdo_pgsql && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*  # Limpiar la caché de APT para reducir el tamaño
 
 # Establecer el directorio de trabajo
 WORKDIR /var/www
