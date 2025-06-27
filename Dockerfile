@@ -1,35 +1,41 @@
-# Usa una imagen base de PHP con Apache
-FROM php:8.3.20-apache
+FROM php:8.3-apache
 
-# Instala dependencias necesarias, incluyendo PostgreSQL
+# 1. Instalar dependencias y extensiones PHP
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
     libpq-dev \
+    libzip-dev \
     git \
     unzip \
-    nano  # nano para editar el archivo de configuración de Apache
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql pdo_pgsql zip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Instala las extensiones de PHP necesarias para Laravel (gd, pdo, pdo_mysql, pdo_pgsql)
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg
-RUN docker-php-ext-install gd pdo pdo_mysql pdo_pgsql
+# 2. Configurar Apache para Laravel
+RUN a2enmod rewrite
+COPY .docker/apache.conf /etc/apache2/sites-available/000-default.conf
 
-# Copia los archivos de tu proyecto Laravel al contenedor
-COPY . /var/www/html/
-
-# Establece el directorio de trabajo
+# 3. Establecer directorio de trabajo
 WORKDIR /var/www/html
 
-# Configuración de Apache para usar la carpeta 'public' como DocumentRoot
-RUN sed -i 's|/var/www/html|/var/www/html/public|' /etc/apache2/sites-available/000-default.conf
+# 4. Copiar archivos del proyecto
+COPY . .
 
-# Habilita el módulo rewrite de Apache
-RUN a2enmod rewrite
+# 5. Instalar Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Instala dependencias de Composer
-RUN curl -sS https://getcomposer.org/installer | php
-RUN php composer.phar install --no-interaction --prefer-dist
+# 6. Ajustar permisos ANTES de composer install (¡Clave!)
+RUN mkdir -p storage/framework/{sessions,views,cache} \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
-# Exponiendo el puerto 80
+# 7. Instalar dependencias
+RUN composer install --no-interaction --prefer-dist --no-scripts
+
+# 8. Asegurar permisos después de la instalación
+RUN chown -R www-data:www-data /var/www/html
+
 EXPOSE 80
